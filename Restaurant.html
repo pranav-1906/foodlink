@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodLink AI Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d5a27;
+        }
+
+        .logo::before {
+            content: "🥬";
+            font-size: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .add-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .daily-spoon {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .user-icon {
+            width: 36px;
+            height: 36px;
+            background: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .user-icon::before {
+            content: "👤";
+            font-size: 16px;
+        }
+
+        /* Main Content Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-title::before {
+            content: "🍽️";
+            font-size: 28px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .radio-item input[type="radio"] {
+            margin: 0;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #6b9e6b;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .quantity-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .quantity-input {
+            flex: 1;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: #ddd;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #6b9e6b;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s ease;
+        }
+
+        .toggle-switch.active::before {
+            left: 26px;
+        }
+
+        .image-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .image-upload:hover {
+            border-color: #6b9e6b;
+        }
+
+        .image-upload.has-image {
+            border-style: solid;
+            padding: 10px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+        }
+
+        .submit-btn {
+            background: #6b9e6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #5a8a5a;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Food Type Cards */
+        .food-type-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .food-type-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #6b9e6b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .food-type-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .food-type-card.new-item {
+            animation: slideIn 0.5s ease-out;
+            border-left-color: #2196F3;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .food-card-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .food-card-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .food-card-status {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .status-fresh {
+            background: #e8f5e8;
+            color: #2d5a27;
+        }
+
+        .status-new {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: linear-gradient(135deg, #6b9e6b 0%, #5a8a5a 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(107, 158, 107, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .info-card::before {
+            content: "🤝";
+            font-size: 48px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .info-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .info-note {
+            font-size: 12px;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 15px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #6b9e6b 0%, #5a8a5a 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        .no-history {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        /* Details Modal */
+        .details-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .details-modal h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .details-modal p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .details-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .details-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .details-info-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .details-info-value {
+            font-weight: 500;
+            color: #333;
+        }
+
+             /* Chat Widget Styles */
+        .chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+        }
+
+        .chat-toggle svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1001;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-chat:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .chat-iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 140px);
+                right: 20px;
+                left: 20px;
+                bottom: 90px;
+            }
+        }
+
+        /* Pulse animation for attention */
+        .chat-toggle.pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            70% {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCpK4fLsgv2ra5DlTqHn2Q8C-_WBHm0Pn0",
+            authDomain: "foodlink-v1.firebaseapp.com",
+            projectId: "foodlink-v1",
+            storageBucket: "foodlink-v1.firebasestorage.app",
+            messagingSenderId: "214055390997",
+            appId: "1:214055390997:web:bc14ed429617ec164da31c",
+            measurementId: "G-09YHQCNRES"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                FoodLink AI
+            </div>
+            <div class="header-right">
+                <span class="daily-spoon">The Daily Spoon</span>
+                <div class="user-icon"></div>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <div class="form-section">
+                <h2 class="form-title">Offer Food for Donation</h2>
+                <form id="donationForm">
+                    <div class="form-group">
+                        <label for="foodTitle" class="form-label">Food Title</label>
+                        <input type="text" id="foodTitle" class="form-input" placeholder="e.g., Assorted Sandwiches" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="foodType" class="form-label">Food Type</label>
+                        <select class="form-select" id="foodType" required>
+                            <option value="">Choose food type</option>
+                            <option value="Fresh Produce">Fresh Produce</option>
+                            <option value="Prepared Meals">Prepared Meals</option>
+                            <option value="Baked Goods">Baked Goods</option>
+                            <option value="Canned Goods">Canned Goods</option>
+                            <option value="Dairy Products">Dairy Products</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity" class="form-label">Estimated Quantity (servings)</label>
+                        <input type="number" id="quantity" class="form-input" placeholder="Enter quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" class="form-textarea" placeholder="Describe the food item, allergens, or special instructions." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="form-label">Pickup Address</label>
+                        <input type="text" id="address" class="form-input" placeholder="Enter full address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact" class="form-label">Contact Information</label>
+                        <input type="text" id="contact" class="form-input" placeholder="Phone number or email" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Donation Offer</button>
+                </form>
+            </div>
+            
+            <div>
+                <div class="info-card">
+                    <h3>Your Impact Today</h3>
+                    <p>Track your contributions and see how you're helping the community.</p>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalOffers">0</div>
+                        <div class="stat-label">Total Offers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalMeals">0</div>
+                        <div class="stat-label">Meals Donated</div>
+                    </div>
+                </div>
+                <div class="food-type-section">
+                    <h4 class="section-title">Quick History</h4>
+                    <div id="historyContainer">
+                        <div class="loading">Loading history...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Details Modal -->
+    <div id="detailsModal" class="details-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2 id="modalTitle">Food Details</h2>
+            <p id="modalDescription"></p>
+            <div class="details-info-grid">
+                <div class="details-info">
+                    <span class="details-info-label">Food Type</span>
+                    <span class="details-info-value" id="modalType"></span>
+                </div>
+                <div class="details-info">
+                    <span class="details-info-label">Quantity</span>
+                    <span class="details-info-value" id="modalQuantity"></span>
+                </div>
+                <div class="details-info">
+                    <span class="details-info-label">Address</span>
+                    <span class="details-info-value" id="modalAddress"></span>
+                </div>
+                <div class="details-info">
+                    <span class="details-info-label">Contact</span>
+                    <span class="details-info-value" id="modalContact"></span>
+                </div>
+                <div class="details-info">
+                    <span class="details-info-label">Status</span>
+                    <span class="details-info-value" id="modalStatus"></span>
+                </div>
+                <div class="details-info">
+                    <span class="details-info-label">Date Created</span>
+                    <span class="details-info-value" id="modalDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <!-- Chat Widget -->
+    <button class="chat-toggle pulse" id="chatToggle">
+        <svg viewBox="0 0 24 24">
+            <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M6,9V7H18V9H6M14,11V13H6V11H14M18,15H6V13H18V15Z" />
+        </svg>
+    </button>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <span>💬 Chat Assistant</span>
+            <button class="close-chat" id="closeChat">×</button>
+        </div>
+        <iframe 
+            class="chat-iframe" 
+            id="chatIframe"
+           src="https://landbot.online/v3/H-3132219-ECGFT3INRNQK6RAZ/index.html"
+            title="Chatbot">
+        </iframe>
+    </div>
+    
+    <script>
+        let totalOffers = 0;
+        let totalMeals = 0;
+
+        // Function to update stats
+        function updateStats() {
+            document.getElementById('totalOffers').textContent = totalOffers;
+            document.getElementById('totalMeals').textContent = totalMeals;
+        }
+
+        // Function to create a food card element
+        function createFoodCard(donation, isNew = false) {
+            const card = document.createElement('div');
+            card.className = `food-type-card${isNew ? ' new-item' : ''}`;
+            card.onclick = () => showDetails(donation);
+            
+            const statusClass = donation.status === 'New Request' ? 'status-new' : 
+                              donation.status === 'Completed' ? 'status-fresh' : 'status-pending';
+            
+            const createdDate = donation.createdAt ? 
+                new Date(donation.createdAt.toDate()).toLocaleDateString() : 
+                new Date().toLocaleDateString();
+            
+            card.innerHTML = `
+                <div class="food-card-title">${donation.title}</div>
+                <div class="food-card-meta">
+                    <span>${donation.type}</span>
+                    <span class="food-card-status ${statusClass}">${donation.status}</span>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Function to show details in modal
+        function showDetails(donation) {
+            document.getElementById('modalTitle').textContent = donation.title;
+            document.getElementById('modalDescription').textContent = donation.description;
+            document.getElementById('modalType').textContent = donation.type;
+            document.getElementById('modalQuantity').textContent = donation.quantity;
+            document.getElementById('modalAddress').textContent = donation.address;
+            document.getElementById('modalContact').textContent = donation.contact;
+            document.getElementById('modalStatus').textContent = donation.status;
+            
+            const createdDate = donation.createdAt ? 
+                new Date(donation.createdAt.toDate()).toLocaleDateString() : 
+                new Date().toLocaleDateString();
+            document.getElementById('modalDate').textContent = createdDate;
+            
+            document.getElementById('detailsModal').style.display = 'block';
+        }
+
+        // Function to load donations from Firestore
+        function loadDonations() {
+            const historyContainer = document.getElementById('historyContainer');
+            
+            // Listen for real-time updates
+            db.collection("donations")
+              .orderBy("createdAt", "desc")
+              .limit(10)
+              .onSnapshot((querySnapshot) => {
+                historyContainer.innerHTML = '';
+                totalOffers = 0;
+                totalMeals = 0;
+                
+                if (querySnapshot.empty) {
+                    historyContainer.innerHTML = '<div class="no-history">No donations yet. Submit your first donation!</div>';
+                    updateStats();
+                    return;
+                }
+                
+                querySnapshot.forEach((doc) => {
+                    const donation = doc.data();
+                    donation.id = doc.id;
+                    
+                    const card = createFoodCard(donation);
+                    historyContainer.appendChild(card);
+                    
+                    totalOffers++;
+                    const quantity = parseInt(donation.quantity) || 0;
+                    totalMeals += quantity;
+                });
+                
+                updateStats();
+            }, (error) => {
+                console.error("Error loading donations:", error);
+                historyContainer.innerHTML = '<div class="no-history">Error loading history. Please refresh the page.</div>';
+            });
+        }
+
+        // Form submission handler
+        const donationForm = document.getElementById('donationForm');
+        
+        donationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Get form values
+            const foodTitle = document.getElementById('foodTitle').value;
+            const foodType = document.getElementById('foodType').value;
+            const quantity = document.getElementById('quantity').value;
+            const description = document.getElementById('description').value;
+            const address = document.getElementById('address').value;
+            const contact = document.getElementById('contact').value;
+
+            // Create a new document in the "donations" collection
+            db.collection("donations").add({
+                title: foodTitle,
+                type: foodType,
+                quantity: `${quantity} servings`,
+                status: "New Request",
+                organization: "The Daily Spoon",
+                address: address,
+                contact: contact,
+                description: description,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then((docRef) => {
+                alert("Donation offer submitted successfully!");
+                donationForm.reset();
+                
+                // The real-time listener will automatically update the UI
+                // No need to manually add to the list
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+                alert("Failed to submit donation. Please try again.");
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Donation Offer';
+            });
+        });
+
+        // Modal functionality
+        document.getElementById('closeModal').onclick = function() {
+            document.getElementById('detailsModal').style.display = 'none';
+        };
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDonations();
+        });
+
+         document.addEventListener('DOMContentLoaded', function() {
+            const chatToggle = document.getElementById('chatToggle');
+            const chatWindow = document.getElementById('chatWindow');
+            const closeChat = document.getElementById('closeChat');
+            const chatIframe = document.getElementById('chatIframe');
+
+            // Toggle chat window
+            chatToggle.addEventListener('click', function() {
+                if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                    chatWindow.style.display = 'flex';
+                    chatToggle.classList.remove('pulse');
+                    
+                    // Reload iframe to restart the bot conversation
+                    chatIframe.src = chatIframe.src;
+                } else {
+                    chatWindow.style.display = 'none';
+                }
+            });
+
+            // Close chat window
+            closeChat.addEventListener('click', function() {
+                chatWindow.style.display = 'none';
+            });
+
+            // Optional: Close chat when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!chatWindow.contains(event.target) && !chatToggle.contains(event.target)) {
+                    // Uncomment the line below if you want to close chat when clicking outside
+                    chatWindow.style.display = 'none';
+                }
+            });
+
+            // Optional: Add pulse animation after page load to draw attention
+            setTimeout(function() {
+                chatToggle.classList.add('pulse');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
